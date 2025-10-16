@@ -3,21 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalp Sitesi</title>
+    <title>Heart Animation</title>
     <style>
         /* Make the body and canvas fill the entire screen with a dark background */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
-            height: 100%;
-            overflow: hidden;
+            min-height: 100%; /* Ensure body is at least full height */
+            height: auto; /* Allow content to grow */
+            overflow-y: auto; /* Allow vertical scrolling if needed */
             background-color: #111; /* Dark background color */
             display: flex;
             flex-direction: column; /* Stack items vertically */
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px 0; /* Add some padding at the top and bottom */
         }
         canvas {
             display: block;
@@ -26,6 +28,8 @@
         /* Styling for the buttons */
         .button-container {
             display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+            justify-content: center;
             gap: 15px;
         }
         button {
@@ -53,8 +57,7 @@
             box-shadow: none;
         }
         .hidden {
-            opacity: 0;
-            pointer-events: none;
+            display: none; /* Use display none to prevent interaction */
         }
         /* Styling for the quote display */
         #quoteContainer {
@@ -70,41 +73,122 @@
             margin-top: 20px; /* Space from buttons */
             padding: 0 10px;
         }
+        
+        /* Styling for the photo gallery container */
+        #photoGallery {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            margin-top: 20px;
+            padding-bottom: 20px;
+        }
+        #photoGallery img {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            border: 3px solid #ff69b4;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
+            display: block;
+        }
+        .gallery-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            padding: 0 20px;
+            transition: color 0.2s;
+            z-index: 5;
+            background-color: rgba(0,0,0,0.3);
+            border-radius: 50%;
+            line-height: 0.8;
+        }
+        .gallery-nav:hover {
+            color: #ff69b4;
+        }
+        #prevPhoto { left: -10px; }
+        #nextPhoto { right: -10px; }
     </style>
 </head>
 <body>
     <!-- The canvas element is where we will draw the heart -->
     <canvas id="heartCanvas"></canvas>
+    
     <div class="button-container">
         <!-- Button to trigger the animation -->
         <button id="drawButton">Draw Heart</button>
         <!-- Button to generate a custom message -->
         <button id="quoteButton" class="hidden">✨ Generate Message</button>
+        <!-- Button to view photos -->
+        <button id="showPhotosButton" class="hidden">📷 View Photos</button>
     </div>
+    
     <div id="quoteContainer"></div>
 
+    <!-- Photo Gallery Container -->
+    <div id="photoGallery" class="hidden">
+        <span id="prevPhoto" class="gallery-nav">&lt;</span>
+        <img id="galleryImg" src="" alt="Photo">
+        <span id="nextPhoto" class="gallery-nav">&gt;</span>
+    </div>
+
+
     <script>
+        // DOM Elements
         const canvas = document.getElementById('heartCanvas');
         const ctx = canvas.getContext('2d');
         const drawButton = document.getElementById('drawButton');
         const quoteButton = document.getElementById('quoteButton');
         const quoteContainer = document.getElementById('quoteContainer');
+        const showPhotosButton = document.getElementById('showPhotosButton');
+        const photoGallery = document.getElementById('photoGallery');
+        const prevPhoto = document.getElementById('prevPhoto');
+        const nextPhoto = document.getElementById('nextPhoto');
+        const galleryImg = document.getElementById('galleryImg');
+        
+        // --- PRE-LOADED PHOTOS ---
+        // These filenames have been updated based on your list.
+        // Make sure the file extension (.jpg) is correct for your images.
+        const preloadedPhotos = [
+            "images/1.jpg",
+            "images/2.jpg",
+            "images/3.jpg",
+            "images/4.jpg",
+            "images/5.jpg",
+            "images/6.jpg",
+            "images/7.jpg",
+            "images/8.jpg",
+            "images/9.jpg",
+            "images/0.jpg",
+            "images/00.jpg",
+            "images/11.jpg",
+            "images/12.jpg",
+            "images/13.jpg",
+            "images/14.jpg",
+            "images/15.jpg",
+            "images/16.jpg",
+            "images/17.jpg",
+            "images/18.jpg",
+            "images/19.jpg"
+        ];
 
+        // State Variables
         let heartAnimationId = null;
         let mAnimationId = null;
-        
-        // Heart animation variables
         let currentT = Math.PI;
         const endT = 3 * Math.PI;
         const step = 0.03;
-
-        // M animation variables
         let mProgress = 0;
         const mPath = [];
+        
+        let currentPhotoIndex = 0;
+        let messageCycleCompleted = false;
 
         // Function to set canvas size and handle window resizing
         function resizeCanvas() {
-            // Reduced canvas size to ensure space for buttons and quote
             const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.5);
             canvas.width = size;
             canvas.height = size;
@@ -115,8 +199,11 @@
             mAnimationId = null;
             drawButton.disabled = false;
             drawButton.textContent = "Draw Heart";
-            quoteButton.classList.add('hidden');
+
+            [quoteButton, showPhotosButton].forEach(btn => btn.classList.add('hidden'));
+            
             quoteContainer.style.opacity = 0;
+            photoGallery.classList.add('hidden');
         }
 
         function drawDot(x, y, color, size) {
@@ -163,7 +250,7 @@
             if (mProgress >= mPath.length - 1) {
                 cancelAnimationFrame(mAnimationId);
                 mAnimationId = null;
-                quoteButton.classList.remove('hidden'); // Show the message button
+                quoteButton.classList.remove('hidden');
                 return;
             }
 
@@ -204,15 +291,12 @@
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
             const scale = canvas.width / 40;
-
             const hx = 16 * Math.pow(Math.sin(currentT), 3);
             const hy = 13 * Math.cos(currentT) - 5 * Math.cos(2 * currentT) - 2 * Math.cos(3 * currentT) - Math.cos(4 * currentT);
-
             const x = centerX + hx * scale;
             const y = centerY - hy * scale;
 
             drawDot(x, y, heartColor, dotSize);
-
             currentT += step;
             heartAnimationId = requestAnimationFrame(animateHeart);
         }
@@ -226,99 +310,77 @@
             currentT = Math.PI;
             drawButton.disabled = true;
             drawButton.textContent = "Drawing...";
-            quoteButton.classList.add('hidden');
+            [quoteButton, showPhotosButton].forEach(btn => btn.classList.add('hidden'));
+            photoGallery.classList.add('hidden');
             quoteContainer.style.opacity = 0;
             quoteContainer.textContent = '';
+            messageCycleCompleted = false;
             
             animateHeart();
         }
 
         // --- Custom Message Feature ---
-
         const customMessages = [
-            "Bayiliyorum Sana",
-            "Soz veriyorum seni operken yanaklarina dokunmak yasak",
-            "Boniko seni ozlemis hemen git op kldaskdls",
-            "Bidahaki gelisimde bomba yemezsek olay cikarcam",
-            "Kordon sahilde overthink banklarina yatmak icin seni zorlamaya can atiyorum dksalk",
-            "Bitanesin",
-            "Seviyorum Seni",
-            "Galata macini galata formasinlan izlerken foto cekcem seni",
-            "Sufle sozunu hala unutmadim haberin olsun",
-            "Bu sefer gelirken vanilya ozunu unutmacam pankeklere onu da koycaz",
-            "Cok ozledim seni",
-            "Mega Pistodakiler boyle site yapabili mi kldsaklads",
-            "Po aklima mercimek corbasi geldi Izmirdeki mekanda icelim mi?",
-            "Sonraki gelisimde buzdolabinda beypazari bulundurmayi unutma",
-            "Ilk hafta konusurken bulusma mevzusunu actigimda Edirne'nin sahili Erikliye gelip orda yuzelim demistim gercekten teklif ediyorum gidelim mi? dsajkdsaj",
-            "Mega pistoda kendine yeni arkadas mi buldun da yazmiyon",
-            "O hamleyi yapcam ama vezirimi yeme tamam mi?",
-            "11de anneannemle kahve iccez 12 - 5 arasi seninle facetime tamam mi?",
-            "Oda turu yapsana bana",
-            "Simar telefonunu ver seninki guzel zoom yapiyo insan keselim",
-            "10 - 12 sendeyim guzelim",
-            "Ayyyy 2 gun kaldi resmen",
-            "Ilk geldigin gun yetisemecem yemek yapmaya tamam mi (felaket makarna yapmis heyecandan prizi bile sokmus manyak jdaskjadsk)",
-            "Humus cok guzeldi. -slk o haydari",
-            "Simar alnima dokme artik su suyu",
-            "BEBITO",
-            "neeeeee dislerini fircalamiyomusun",
-            "okuldan eve donerken seni arasam olur mu?",
-            "Elim carpti",
-            "Tamam baska seyler hakkinda konusalim sana anneannemin odasinin turunu yapayim mi",
-            "Valorant indirdim hazirlan",
-            "Of simar parfum koktu butun oda annem kesin cok kizdi",
-            "Daha yavas sur arabayi daha cok sohbet edelim",
-            "Cikmaz sokaga bile bile girdim arkaya donup sana bakayim diye sdakjldas",
-            "Fifa oynamaya gidelim mi",
-            "Bu kilisedeki can neden caliyor",
-            "Tamam al ucak biletini",
-            "Otobus yolculugu yaparken konusmamizi cok ozledim",
-            "muho",
-            "Ayse",
-            "Ping pong",
-            "Dudak dolgum nasil olmus",
-            "Saclarimin rengini acicam",
-            "Simar cok komikti maket oldugu icin taxiye binemedi",
-            "Agalar bu kadar valizle yokusu cikamadim otogardan cikmak cok zordu",
-            "Bekle arabaya iniyorum seninle konusmaya",
-            "Barismak",
-            "Bogulma"
-
+             "Bayiliyorum Sana", "Soz veriyorum seni operken yanaklarina dokunmak yasak", "Boniko seni ozlemis hemen git op kldaskdls", "Bidahaki gelisimde bomba yemezsek olay cikarcam", "Kordon sahilde overthink banklarina yatmak icin seni zorlamaya can atiyorum dksalk", "Bitanesin", "Seviyorum Seni", "Galata macini galata formasinlan izlerken foto cekcem seni", "Sufle sozunu hala unutmadim haberin olsun", "Bu sefer gelirken vanilya ozunu unutmacam pankeklere onu da koycaz", "Cok ozledim seni", "Mega Pistodakiler boyle site yapabili mi kldsaklads", "Po aklima mercimek corbasi geldi Izmirdeki mekanda icelim mi?", "Sonraki gelisimde buzdolabinda beypazari bulundurmayi unutma", "Ilk hafta konusurken bulusma mevzusunu actigimda Edirne'nin sahili Erikliye gelip orda yuzelim demistim gercekten teklif ediyorum gidelim mi? dsajkdsaj", "Mega pistoda kendine yeni arkadas mi buldun da yazmiyon", "O hamleyi yapcam ama vezirimi yeme tamam mi?", "11de anneannemle kahve iccez 12 - 5 arasi seninle facetime tamam mi?", "Oda turu yapsana bana", "Simar telefonunu ver seninki guzel zoom yapiyo insan keselim", "10 - 12 sendeyim guzelim", "Ayyyy 2 gun kaldi resmen", "Ilk geldigin gun yetisemecem yemek yapmaya tamam mi (felaket makarna yapmis heyecandan prizi bile sokmus manyak jdaskjadsk)", "Humus cok guzeldi. -slk o haydari", "Simar alnima dokme artik su suyu", "BEBITO", "neeeeee dislerini fircalamiyomusun", "okuldan eve donerken seni arasam olur mu?", "Elim carpti", "Tamam baska seyler hakkinda konusalim sana anneannemin odasinin turunu yapayim mi", "Valorant indirdim hazirlan", "Of simar parfum koktu butun oda annem kesin cok kizdi", "Daha yavas sur arabayi daha cok sohbet edelim", "Cikmaz sokaga bile bile girdim arkaya donup sana bakayim diye sdakjldas", "Fifa oynamaya gidelim mi", "Bu kilisedeki can neden caliyor", "Tamam al ucak biletini", "Otobus yolculugu yaparken konusmamizi cok ozledim", "muho", "Ayse", "Ping pong", "Dudak dolgum nasil olmus", "Saclarimin rengini acicam", "Simar cok komikti maket oldugu icin taxiye binemedi", "Agalar bu kadar valizle yokusu cikamadim otogardan cikmak cok zordu", "Bekle arabaya iniyorum seninle konusmaya", "Barismak", "Bogulma"
         ];
-
         let messagePool = [];
-
         function refillMessagePool() {
             messagePool = [...customMessages];
         }
-
         function showCustomMessage() {
             quoteContainer.style.opacity = 1;
             quoteContainer.textContent = '...';
             quoteButton.disabled = true;
-
-            // Simulate a slight delay to make it feel like it's "generating"
             setTimeout(() => {
-                // If the pool is empty, it means we've shown all messages. Refill it.
                 if (messagePool.length === 0) {
                     refillMessagePool();
+                    messageCycleCompleted = true; // Mark that one full cycle is done
+                    if(preloadedPhotos.length > 0) {
+                        showPhotosButton.classList.remove('hidden');
+                    }
                 }
-                
-                // Pick a random index from the pool
                 const poolIndex = Math.floor(Math.random() * messagePool.length);
-                
-                // Get the message and REMOVE it from the pool for this cycle
                 const message = messagePool.splice(poolIndex, 1)[0];
-
                 quoteContainer.textContent = `"${message}"`;
                 quoteButton.disabled = false;
-            }, 300); // 300ms delay
+            }, 300);
         }
         
+        // --- Photo Gallery Feature ---
+        function displayPhoto() {
+            if (preloadedPhotos.length === 0) {
+                photoGallery.classList.add('hidden');
+                return;
+            }
+            galleryImg.src = preloadedPhotos[currentPhotoIndex];
+        }
+
+        function showNextPhoto() {
+            currentPhotoIndex = (currentPhotoIndex + 1) % preloadedPhotos.length;
+            displayPhoto();
+        }
+        
+        function showPrevPhoto() {
+            currentPhotoIndex = (currentPhotoIndex - 1 + preloadedPhotos.length) % preloadedPhotos.length;
+            displayPhoto();
+        }
+
+        function togglePhotoGallery() {
+            if (preloadedPhotos.length > 0) {
+                const isHidden = photoGallery.classList.toggle('hidden');
+                if (!isHidden) {
+                    currentPhotoIndex = 0;
+                    displayPhoto();
+                }
+            }
+        }
+
         // Event listeners
         drawButton.addEventListener('click', startAnimation);
         quoteButton.addEventListener('click', showCustomMessage); 
+        showPhotosButton.addEventListener('click', togglePhotoGallery);
+        nextPhoto.addEventListener('click', showNextPhoto);
+        prevPhoto.addEventListener('click', showPrevPhoto);
         window.addEventListener('resize', resizeCanvas, false);
         
         // Initial setup
@@ -327,5 +389,4 @@
     </script>
 </body>
 </html>
-
 
