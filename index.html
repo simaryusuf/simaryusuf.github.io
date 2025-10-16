@@ -1,51 +1,330 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ozur sitesi</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Animation</title>
+    <style>
+        /* Make the body and canvas fill the entire screen with a dark background */
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #111; /* Dark background color */
+            display: flex;
+            flex-direction: column; /* Stack items vertically */
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        canvas {
+            display: block;
+            margin-bottom: 20px; /* Add some space below the canvas */
+        }
+        /* Styling for the buttons */
+        .button-container {
+            display: flex;
+            gap: 15px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            background-color: #ff69b4;
+            color: #111;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            z-index: 10;
+            transition: background-color 0.3s, transform 0.2s, opacity 0.5s;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+            opacity: 1;
+        }
+        button:hover {
+            background-color: #ff85c1;
+            transform: scale(1.05);
+        }
+        button:disabled {
+            background-color: #555;
+            color: #999;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        /* Styling for the quote display */
+        #quoteContainer {
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            color: #ffcce7;
+            font-size: 18px;
+            font-style: italic;
+            transition: opacity 0.5s ease-in-out;
+            opacity: 0;
+            min-height: 50px; /* Reserve space */
+            margin-top: 20px; /* Space from buttons */
+            padding: 0 10px;
+        }
+    </style>
 </head>
 <body>
+    <!-- The canvas element is where we will draw the heart -->
+    <canvas id="heartCanvas"></canvas>
+    <div class="button-container">
+        <!-- Button to trigger the animation -->
+        <button id="drawButton">Draw Heart</button>
+        <!-- Button to generate a custom message -->
+        <button id="quoteButton" class="hidden">✨ Generate Message</button>
+    </div>
+    <div id="quoteContainer"></div>
 
-  <center>
-    <h1>Selam Güzelim </h1>
-  </center>
+    <script>
+        const canvas = document.getElementById('heartCanvas');
+        const ctx = canvas.getContext('2d');
+        const drawButton = document.getElementById('drawButton');
+        const quoteButton = document.getElementById('quoteButton');
+        const quoteContainer = document.getElementById('quoteContainer');
 
-  <hr>
+        let heartAnimationId = null;
+        let mAnimationId = null;
+        
+        // Heart animation variables
+        let currentT = Math.PI;
+        const endT = 3 * Math.PI;
+        const step = 0.03;
 
-  <h2>Özledim</h2>
-  <p>
-    Bayiliyorum sana artik ara da aksam konusmamizi yapalim. <br><br>
-    2 gün sonra istedigin kadar trip atabilirsin sinavlarim bitiyor. <br><br>
-    Cok guzelsin. <br><br>
-    Biraz daha aksam tripini uzatirsan sana kullandim bütün sifatlari
-    (güzelim, bitanem vs.) virgul koyarak yazcam. <br><br>
-    5 dkya ara bitanem. Opuyorum 
-  </p> 
+        // M animation variables
+        let mProgress = 0;
+        const mPath = [];
 
-  <hr>
+        // Function to set canvas size and handle window resizing
+        function resizeCanvas() {
+            // Reduced canvas size to ensure space for buttons and quote
+            const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.5);
+            canvas.width = size;
+            canvas.height = size;
+            
+            if (heartAnimationId) cancelAnimationFrame(heartAnimationId);
+            if (mAnimationId) cancelAnimationFrame(mAnimationId);
+            heartAnimationId = null;
+            mAnimationId = null;
+            drawButton.disabled = false;
+            drawButton.textContent = "Draw Heart";
+            quoteButton.classList.add('hidden');
+            quoteContainer.style.opacity = 0;
+        }
 
-  <h2>Baristik mi?</h2>
-  <form>
-    <label>
-      <input type="radio" name="baristik" value="evet" checked>
-      EVET
-    </label><br><br>
+        function drawDot(x, y, color, size) {
+            ctx.beginPath();
+            ctx.fillStyle = color;
+            ctx.arc(x, y, size, 0, Math.PI * 2);
+            ctx.fill();
+        }
 
-    <label>
-      <input type="radio" name="baristik" value="hayir" disabled>
-      hyr (istesen de basamazsin zaten deneme)
-    </label>
-  </form>
+        // --- M Animation Functions ---
+        function calculateMPath() {
+            mPath.length = 0;
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const scale = canvas.width / 70;
+            const mHeight = scale * 6;
+            const mWidth = scale * 6;
+            const valleyDepth = centerY + mHeight * 0.1;
 
-  <hr><br>
+            const p0 = { x: centerX - mWidth, y: centerY + mHeight / 2 };
+            const p1 = { x: centerX - mWidth, y: centerY - mHeight / 3 };
+            const p2 = { x: centerX - mWidth / 2, y: centerY - mHeight / 2 };
+            const p3 = { x: centerX, y: valleyDepth };
+            const p4 = { x: centerX + mWidth / 2, y: centerY - mHeight / 2 };
+            const p5 = { x: centerX + mWidth, y: centerY - mHeight / 3 };
+            const p6 = { x: centerX + mWidth, y: centerY + mHeight / 2 };
 
-  <center>
-    <a href="https://www.youtube.com/watch?v=SlO4w1jTwpM"
-       style="display:inline-block; font-size:18px; padding:12px 24px; background:#f2f2f2; border:1px solid #aaa; border-radius:6px; text-decoration:none; color:black;">
-        Uyku Modunu Acmak Icin Tikla
-    </a>
-  </center>
+            const segments = 40;
+            for (let i = 0; i <= segments; i++) {
+                const t = i / segments;
+                const x = Math.pow(1 - t, 3) * p0.x + 3 * Math.pow(1 - t, 2) * t * p1.x + 3 * (1 - t) * Math.pow(t, 2) * p2.x + Math.pow(t, 3) * p3.x;
+                const y = Math.pow(1 - t, 3) * p0.y + 3 * Math.pow(1 - t, 2) * t * p1.y + 3 * (1 - t) * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
+                mPath.push({ x, y });
+            }
+            for (let i = 1; i <= segments; i++) {
+                const t = i / segments;
+                const x = Math.pow(1 - t, 3) * p3.x + 3 * Math.pow(1 - t, 2) * t * p4.x + 3 * (1 - t) * Math.pow(t, 2) * p5.x + Math.pow(t, 3) * p6.x;
+                const y = Math.pow(1 - t, 3) * p3.y + 3 * Math.pow(1 - t, 2) * t * p4.y + 3 * (1 - t) * Math.pow(t, 2) * p5.y + Math.pow(t, 3) * p6.y;
+                mPath.push({ x, y });
+            }
+        }
+        
+        function animateM() {
+            if (mProgress >= mPath.length - 1) {
+                cancelAnimationFrame(mAnimationId);
+                mAnimationId = null;
+                quoteButton.classList.remove('hidden'); // Show the message button
+                return;
+            }
 
+            const mColor = '#ff69b4';
+            const lineWidth = Math.max(4, canvas.width / 120);
+            ctx.strokeStyle = mColor;
+            ctx.lineWidth = lineWidth;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+
+            ctx.beginPath();
+            ctx.moveTo(mPath[mProgress].x, mPath[mProgress].y);
+            ctx.lineTo(mPath[mProgress + 1].x, mPath[mProgress + 1].y);
+            ctx.stroke();
+            
+            mProgress++;
+            mAnimationId = requestAnimationFrame(animateM);
+        }
+
+        function startMAnimation() {
+            mProgress = 0;
+            calculateMPath();
+            animateM();
+        }
+        
+        // --- Heart Animation Functions ---
+        function animateHeart() {
+            if (currentT > endT) {
+                heartAnimationId = null;
+                drawButton.disabled = false;
+                drawButton.textContent = "Draw Again";
+                startMAnimation();
+                return;
+            }
+
+            const heartColor = '#ff69b4';
+            const dotSize = Math.max(2, canvas.width / 200);
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const scale = canvas.width / 40;
+
+            const hx = 16 * Math.pow(Math.sin(currentT), 3);
+            const hy = 13 * Math.cos(currentT) - 5 * Math.cos(2 * currentT) - 2 * Math.cos(3 * currentT) - Math.cos(4 * currentT);
+
+            const x = centerX + hx * scale;
+            const y = centerY - hy * scale;
+
+            drawDot(x, y, heartColor, dotSize);
+
+            currentT += step;
+            heartAnimationId = requestAnimationFrame(animateHeart);
+        }
+
+        // --- Main Control Function ---
+        function startAnimation() {
+            if (heartAnimationId) cancelAnimationFrame(heartAnimationId);
+            if (mAnimationId) cancelAnimationFrame(mAnimationId);
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            currentT = Math.PI;
+            drawButton.disabled = true;
+            drawButton.textContent = "Drawing...";
+            quoteButton.classList.add('hidden');
+            quoteContainer.style.opacity = 0;
+            quoteContainer.textContent = '';
+            
+            animateHeart();
+        }
+
+        // --- Custom Message Feature ---
+
+        const customMessages = [
+            "Bayiliyorum Sana",
+            "Soz veriyorum seni operken yanaklarina dokunmak yasak",
+            "Boniko seni ozlemis hemen git op kldaskdls",
+            "Bidahaki gelisimde bomba yemezsek olay cikarcam",
+            "Kordon sahilde overthink banklarina yatmak icin seni zorlamaya can atiyorum dksalk",
+            "Bitanesin",
+            "Seviyorum Seni",
+            "Galata macini galata formasinlan izlerken foto cekcem seni",
+            "Sufle sozunu hala unutmadim haberin olsun",
+            "Bu sefer gelirken vanilya ozunu unutmacam pankeklere onu da koycaz",
+            "Cok ozledim seni",
+            "Mega Pistodakiler boyle site yapabili mi kldsaklads",
+            "Po aklima mercimek corbasi geldi Izmirdeki mekanda icelim mi?",
+            "Sonraki gelisimde buzdolabinda beypazari bulundurmayi unutma",
+            "Ilk hafta konusurken bulusma mevzusunu actigimda Edirne'nin sahili Erikliye gelip orda yuzelim demistim gercekten teklif ediyorum gidelim mi? dsajkdsaj",
+            "Mega pistoda kendine yeni arkadas mi buldun da yazmiyon",
+            "O hamleyi yapcam ama vezirimi yeme tamam mi?",
+            "11de anneannemle kahve iccez 12 - 5 arasi seninle facetime tamam mi?",
+            "Oda turu yapsana bana",
+            "Simar telefonunu ver seninki guzel zoom yapiyo insan keselim",
+            "10 - 12 sendeyim guzelim",
+            "Ayyyy 2 gun kaldi resmen",
+            "Ilk geldigin gun yetisemecem yemek yapmaya tamam mi (felaket makarna yapmis heyecandan prizi bile sokmus manyak jdaskjadsk)",
+            "Humus cok guzeldi. -slk o haydari",
+            "Simar alnima dokme artik su suyu",
+            "BEBITO",
+            "neeeeee dislerini fircalamiyomusun",
+            "okuldan eve donerken seni arasam olur mu?",
+            "Elim carpti",
+            "Tamam baska seyler hakkinda konusalim sana anneannemin odasinin turunu yapayim mi",
+            "Valorant indirdim hazirlan",
+            "Of simar parfum koktu butun oda annem kesin cok kizdi",
+            "Daha yavas sur arabayi daha cok sohbet edelim",
+            "Cikmaz sokaga bile bile girdim arkaya donup sana bakayim diye sdakjldas",
+            "Fifa oynamaya gidelim mi",
+            "Bu kilisedeki can neden caliyor",
+            "Tamam al ucak biletini",
+            "Otobus yolculugu yaparken konusmamizi cok ozledim",
+            "muho",
+            "Ayse",
+            "Ping pong",
+            "Dudak dolgum nasil olmus",
+            "Saclarimin rengini acicam",
+            "Simar cok komikti maket oldugu icin taxiye binemedi",
+            "Agalar bu kadar valizle yokusu cikamadim otogardan cikmak cok zordu",
+            "Bekle arabaya iniyorum seninle konusmaya",
+            "Barismak",
+            "Bogulma"
+
+        ];
+
+        let messagePool = [];
+
+        function refillMessagePool() {
+            messagePool = [...customMessages];
+        }
+
+        function showCustomMessage() {
+            quoteContainer.style.opacity = 1;
+            quoteContainer.textContent = '...';
+            quoteButton.disabled = true;
+
+            // Simulate a slight delay to make it feel like it's "generating"
+            setTimeout(() => {
+                // If the pool is empty, it means we've shown all messages. Refill it.
+                if (messagePool.length === 0) {
+                    refillMessagePool();
+                }
+                
+                // Pick a random index from the pool
+                const poolIndex = Math.floor(Math.random() * messagePool.length);
+                
+                // Get the message and REMOVE it from the pool for this cycle
+                const message = messagePool.splice(poolIndex, 1)[0];
+
+                quoteContainer.textContent = `"${message}"`;
+                quoteButton.disabled = false;
+            }, 300); // 300ms delay
+        }
+        
+        // Event listeners
+        drawButton.addEventListener('click', startAnimation);
+        quoteButton.addEventListener('click', showCustomMessage); 
+        window.addEventListener('resize', resizeCanvas, false);
+        
+        // Initial setup
+        refillMessagePool(); // Fill the pool for the first time
+        resizeCanvas();
+    </script>
 </body>
 </html>
+
