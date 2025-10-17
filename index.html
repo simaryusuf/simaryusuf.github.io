@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ozur Sitesi V2</title>
+    <title>Heart Animation</title>
     <style>
         /* Make the body and canvas fill the entire screen with a dark background */
         html, body {
@@ -31,6 +31,7 @@
             flex-wrap: wrap; /* Allow buttons to wrap on small screens */
             justify-content: center;
             gap: 15px;
+            margin-bottom: 20px;
         }
         button {
             padding: 12px 24px;
@@ -57,7 +58,8 @@
             box-shadow: none;
         }
         .hidden {
-            display: none; /* Use display none to prevent interaction */
+            /* Use !important to ensure this rule overrides other display properties */
+            display: none !important;
         }
         /* Styling for the quote display */
         #quoteContainer {
@@ -70,7 +72,6 @@
             transition: opacity 0.5s ease-in-out;
             opacity: 0;
             min-height: 50px; /* Reserve space */
-            margin-top: 20px; /* Space from buttons */
             padding: 0 10px;
         }
         
@@ -111,30 +112,59 @@
         }
         #prevPhoto { left: -10px; }
         #nextPhoto { right: -10px; }
+        
+        /* Styling for the video player overlay */
+        #videoContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        #videoPlayer {
+            max-width: 90%;
+            max-height: 90%;
+            border: 3px solid #ff69b4;
+            border-radius: 8px;
+        }
+        #closeVideo {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <!-- The canvas element is where we will draw the heart -->
     <canvas id="heartCanvas"></canvas>
     
     <div class="button-container">
-        <!-- Button to trigger the animation -->
         <button id="drawButton">Draw Heart</button>
-        <!-- Button to generate a custom message -->
         <button id="quoteButton" class="hidden">✨ Generate Message</button>
-        <!-- Button to view photos -->
         <button id="showPhotosButton" class="hidden">📷 View Photos</button>
+        <button id="revealVideoButton" class="hidden">🎬 Reveal Video</button>
     </div>
     
     <div id="quoteContainer"></div>
 
-    <!-- Photo Gallery Container -->
     <div id="photoGallery" class="hidden">
         <span id="prevPhoto" class="gallery-nav">&lt;</span>
         <img id="galleryImg" src="" alt="Photo">
         <span id="nextPhoto" class="gallery-nav">&gt;</span>
     </div>
 
+    <!-- Video Player Overlay -->
+    <div id="videoContainer" class="hidden">
+        <span id="closeVideo">&times;</span>
+        <video id="videoPlayer" controls></video>
+    </div>
 
     <script>
         // DOM Elements
@@ -148,211 +178,155 @@
         const prevPhoto = document.getElementById('prevPhoto');
         const nextPhoto = document.getElementById('nextPhoto');
         const galleryImg = document.getElementById('galleryImg');
+        const revealVideoButton = document.getElementById('revealVideoButton');
+        const videoContainer = document.getElementById('videoContainer');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const closeVideo = document.getElementById('closeVideo');
         
+        // --- VIDEO PATH ---
+        // IMPORTANT: Make sure this path matches your folder and video file name.
+        const videoPath = "videos/our-video.mp4";
+
         // --- PRE-LOADED PHOTOS ---
-        // These filenames have been updated based on your list.
-        // Make sure the file extension (.jpg) is correct for your images.
         const preloadedPhotos = [
-            "images/1.jpg",
-            "images/2.jpg",
-            "images/3.jpg",
-            "images/4.jpg",
-            "images/5.jpg",
-            "images/6.jpg",
-            "images/7.jpg",
-            "images/8.jpg",
-            "images/9.jpg",
-            "images/0.jpg",
-            "images/00.jpg",
-            "images/11.jpg",
-            "images/12.jpg",
-            "images/13.jpg",
-            "images/14.jpg",
-            "images/15.jpg",
-            "images/16.jpg",
-            "images/17.jpg",
-            "images/18.jpg",
-            "images/19.jpg"
+            "images/1.jpg","images/2.jpg","images/3.jpg","images/4.jpg","images/5.jpg",
+            "images/6.jpg","images/7.jpg","images/8.jpg","images/9.jpg","images/0.jpg",
+            "images/00.jpg","images/11.jpg","images/12.jpg","images/13.jpg","images/14.jpg",
+            "images/15.jpg","images/16.jpg","images/17.jpg","images/18.jpg","images/19.jpg"
         ];
 
         // State Variables
-        let heartAnimationId = null;
-        let mAnimationId = null;
-        let currentT = Math.PI;
-        const endT = 3 * Math.PI;
-        const step = 0.03;
-        let mProgress = 0;
+        let heartAnimationId = null, mAnimationId = null;
+        let currentT = Math.PI, mProgress = 0;
+        const endT = 3 * Math.PI, step = 0.03;
         const mPath = [];
-        
         let currentPhotoIndex = 0;
         let messageCycleCompleted = false;
+        let viewedPhotos = new Set();
+        let allPhotosViewed = false; // Flag to track if the photo cycle is complete
 
-        // Function to set canvas size and handle window resizing
         function resizeCanvas() {
             const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.5);
             canvas.width = size;
             canvas.height = size;
-            
             if (heartAnimationId) cancelAnimationFrame(heartAnimationId);
             if (mAnimationId) cancelAnimationFrame(mAnimationId);
-            heartAnimationId = null;
-            mAnimationId = null;
+            heartAnimationId = mAnimationId = null;
             drawButton.disabled = false;
             drawButton.textContent = "Draw Heart";
-
-            [quoteButton, showPhotosButton].forEach(btn => btn.classList.add('hidden'));
-            
+            [quoteButton, showPhotosButton, revealVideoButton].forEach(btn => btn.classList.add('hidden'));
             quoteContainer.style.opacity = 0;
             photoGallery.classList.add('hidden');
+            videoContainer.classList.add('hidden');
         }
 
         function drawDot(x, y, color, size) {
-            ctx.beginPath();
-            ctx.fillStyle = color;
-            ctx.arc(x, y, size, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.beginPath(); ctx.fillStyle = color;
+            ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fill();
         }
 
-        // --- M Animation Functions ---
         function calculateMPath() {
             mPath.length = 0;
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const scale = canvas.width / 70;
-            const mHeight = scale * 6;
-            const mWidth = scale * 6;
+            const centerX = canvas.width / 2, centerY = canvas.height / 2;
+            const scale = canvas.width / 70, mHeight = scale * 6, mWidth = scale * 6;
             const valleyDepth = centerY + mHeight * 0.1;
-
-            const p0 = { x: centerX - mWidth, y: centerY + mHeight / 2 };
-            const p1 = { x: centerX - mWidth, y: centerY - mHeight / 3 };
-            const p2 = { x: centerX - mWidth / 2, y: centerY - mHeight / 2 };
-            const p3 = { x: centerX, y: valleyDepth };
-            const p4 = { x: centerX + mWidth / 2, y: centerY - mHeight / 2 };
-            const p5 = { x: centerX + mWidth, y: centerY - mHeight / 3 };
-            const p6 = { x: centerX + mWidth, y: centerY + mHeight / 2 };
-
+            const p = [
+                { x: centerX - mWidth, y: centerY + mHeight / 2 },
+                { x: centerX - mWidth, y: centerY - mHeight / 3 },
+                { x: centerX - mWidth / 2, y: centerY - mHeight / 2 },
+                { x: centerX, y: valleyDepth },
+                { x: centerX + mWidth / 2, y: centerY - mHeight / 2 },
+                { x: centerX + mWidth, y: centerY - mHeight / 3 },
+                { x: centerX + mWidth, y: centerY + mHeight / 2 }
+            ];
             const segments = 40;
             for (let i = 0; i <= segments; i++) {
                 const t = i / segments;
-                const x = Math.pow(1 - t, 3) * p0.x + 3 * Math.pow(1 - t, 2) * t * p1.x + 3 * (1 - t) * Math.pow(t, 2) * p2.x + Math.pow(t, 3) * p3.x;
-                const y = Math.pow(1 - t, 3) * p0.y + 3 * Math.pow(1 - t, 2) * t * p1.y + 3 * (1 - t) * Math.pow(t, 2) * p2.y + Math.pow(t, 3) * p3.y;
+                const x = Math.pow(1 - t, 3) * p[0].x + 3 * Math.pow(1 - t, 2) * t * p[1].x + 3 * (1 - t) * Math.pow(t, 2) * p[2].x + Math.pow(t, 3) * p[3].x;
+                const y = Math.pow(1 - t, 3) * p[0].y + 3 * Math.pow(1 - t, 2) * t * p[1].y + 3 * (1 - t) * Math.pow(t, 2) * p[2].y + Math.pow(t, 3) * p[3].y;
                 mPath.push({ x, y });
             }
             for (let i = 1; i <= segments; i++) {
                 const t = i / segments;
-                const x = Math.pow(1 - t, 3) * p3.x + 3 * Math.pow(1 - t, 2) * t * p4.x + 3 * (1 - t) * Math.pow(t, 2) * p5.x + Math.pow(t, 3) * p6.x;
-                const y = Math.pow(1 - t, 3) * p3.y + 3 * Math.pow(1 - t, 2) * t * p4.y + 3 * (1 - t) * Math.pow(t, 2) * p5.y + Math.pow(t, 3) * p6.y;
+                const x = Math.pow(1 - t, 3) * p[3].x + 3 * Math.pow(1 - t, 2) * t * p[4].x + 3 * (1 - t) * Math.pow(t, 2) * p[5].x + Math.pow(t, 3) * p[6].x;
+                const y = Math.pow(1 - t, 3) * p[3].y + 3 * Math.pow(1 - t, 2) * t * p[4].y + 3 * (1 - t) * Math.pow(t, 2) * p[5].y + Math.pow(t, 3) * p[6].y;
                 mPath.push({ x, y });
             }
         }
         
         function animateM() {
             if (mProgress >= mPath.length - 1) {
-                cancelAnimationFrame(mAnimationId);
-                mAnimationId = null;
-                quoteButton.classList.remove('hidden');
-                return;
+                cancelAnimationFrame(mAnimationId); mAnimationId = null;
+                quoteButton.classList.remove('hidden'); return;
             }
-
-            const mColor = '#ff69b4';
-            const lineWidth = Math.max(4, canvas.width / 120);
-            ctx.strokeStyle = mColor;
-            ctx.lineWidth = lineWidth;
-            ctx.lineJoin = 'round';
-            ctx.lineCap = 'round';
-
+            ctx.strokeStyle = '#ff69b4'; ctx.lineWidth = Math.max(4, canvas.width / 120);
+            ctx.lineJoin = 'round'; ctx.lineCap = 'round';
             ctx.beginPath();
             ctx.moveTo(mPath[mProgress].x, mPath[mProgress].y);
             ctx.lineTo(mPath[mProgress + 1].x, mPath[mProgress + 1].y);
             ctx.stroke();
-            
             mProgress++;
             mAnimationId = requestAnimationFrame(animateM);
         }
 
-        function startMAnimation() {
-            mProgress = 0;
-            calculateMPath();
-            animateM();
-        }
+        function startMAnimation() { mProgress = 0; calculateMPath(); animateM(); }
         
-        // --- Heart Animation Functions ---
         function animateHeart() {
             if (currentT > endT) {
-                heartAnimationId = null;
-                drawButton.disabled = false;
-                drawButton.textContent = "Draw Again";
-                startMAnimation();
-                return;
+                heartAnimationId = null; drawButton.disabled = false;
+                drawButton.textContent = "Draw Again"; startMAnimation(); return;
             }
-
-            const heartColor = '#ff69b4';
-            const dotSize = Math.max(2, canvas.width / 200);
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const scale = canvas.width / 40;
+            const scale = canvas.width / 40, centerX = canvas.width / 2, centerY = canvas.height / 2;
             const hx = 16 * Math.pow(Math.sin(currentT), 3);
             const hy = 13 * Math.cos(currentT) - 5 * Math.cos(2 * currentT) - 2 * Math.cos(3 * currentT) - Math.cos(4 * currentT);
-            const x = centerX + hx * scale;
-            const y = centerY - hy * scale;
-
-            drawDot(x, y, heartColor, dotSize);
+            drawDot(centerX + hx * scale, centerY - hy * scale, '#ff69b4', Math.max(2, canvas.width / 200));
             currentT += step;
             heartAnimationId = requestAnimationFrame(animateHeart);
         }
 
-        // --- Main Control Function ---
         function startAnimation() {
             if (heartAnimationId) cancelAnimationFrame(heartAnimationId);
             if (mAnimationId) cancelAnimationFrame(mAnimationId);
-            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             currentT = Math.PI;
-            drawButton.disabled = true;
-            drawButton.textContent = "Drawing...";
-            [quoteButton, showPhotosButton].forEach(btn => btn.classList.add('hidden'));
+            drawButton.disabled = true; drawButton.textContent = "Drawing...";
+            [quoteButton, showPhotosButton, revealVideoButton].forEach(btn => btn.classList.add('hidden'));
             photoGallery.classList.add('hidden');
-            quoteContainer.style.opacity = 0;
-            quoteContainer.textContent = '';
+            quoteContainer.style.opacity = 0; quoteContainer.textContent = '';
             messageCycleCompleted = false;
-            
+            viewedPhotos.clear();
+            allPhotosViewed = false; // Reset the flag
             animateHeart();
         }
 
-        // --- Custom Message Feature ---
         const customMessages = [
              "Bayiliyorum Sana", "Soz veriyorum seni operken yanaklarina dokunmak yasak", "Boniko seni ozlemis hemen git op kldaskdls", "Bidahaki gelisimde bomba yemezsek olay cikarcam", "Kordon sahilde overthink banklarina yatmak icin seni zorlamaya can atiyorum dksalk", "Bitanesin", "Seviyorum Seni", "Galata macini galata formasinlan izlerken foto cekcem seni", "Sufle sozunu hala unutmadim haberin olsun", "Bu sefer gelirken vanilya ozunu unutmacam pankeklere onu da koycaz", "Cok ozledim seni", "Mega Pistodakiler boyle site yapabili mi kldsaklads", "Po aklima mercimek corbasi geldi Izmirdeki mekanda icelim mi?", "Sonraki gelisimde buzdolabinda beypazari bulundurmayi unutma", "Ilk hafta konusurken bulusma mevzusunu actigimda Edirne'nin sahili Erikliye gelip orda yuzelim demistim gercekten teklif ediyorum gidelim mi? dsajkdsaj", "Mega pistoda kendine yeni arkadas mi buldun da yazmiyon", "O hamleyi yapcam ama vezirimi yeme tamam mi?", "11de anneannemle kahve iccez 12 - 5 arasi seninle facetime tamam mi?", "Oda turu yapsana bana", "Simar telefonunu ver seninki guzel zoom yapiyo insan keselim", "10 - 12 sendeyim guzelim", "Ayyyy 2 gun kaldi resmen", "Ilk geldigin gun yetisemecem yemek yapmaya tamam mi (felaket makarna yapmis heyecandan prizi bile sokmus manyak jdaskjadsk)", "Humus cok guzeldi. -slk o haydari", "Simar alnima dokme artik su suyu", "BEBITO", "neeeeee dislerini fircalamiyomusun", "okuldan eve donerken seni arasam olur mu?", "Elim carpti", "Tamam baska seyler hakkinda konusalim sana anneannemin odasinin turunu yapayim mi", "Valorant indirdim hazirlan", "Of simar parfum koktu butun oda annem kesin cok kizdi", "Daha yavas sur arabayi daha cok sohbet edelim", "Cikmaz sokaga bile bile girdim arkaya donup sana bakayim diye sdakjldas", "Fifa oynamaya gidelim mi", "Bu kilisedeki can neden caliyor", "Tamam al ucak biletini", "Otobus yolculugu yaparken konusmamizi cok ozledim", "muho", "Ayse", "Ping pong", "Dudak dolgum nasil olmus", "Saclarimin rengini acicam", "Simar cok komikti maket oldugu icin taxiye binemedi", "Agalar bu kadar valizle yokusu cikamadim otogardan cikmak cok zordu", "Bekle arabaya iniyorum seninle konusmaya", "Barismak", "Bogulma"
         ];
         let messagePool = [];
-        function refillMessagePool() {
-            messagePool = [...customMessages];
-        }
+        function refillMessagePool() { messagePool = [...customMessages]; }
+        
         function showCustomMessage() {
-            quoteContainer.style.opacity = 1;
-            quoteContainer.textContent = '...';
+            quoteContainer.style.opacity = 1; quoteContainer.textContent = '...';
             quoteButton.disabled = true;
             setTimeout(() => {
                 if (messagePool.length === 0) {
-                    refillMessagePool();
-                    messageCycleCompleted = true; // Mark that one full cycle is done
-                    if(preloadedPhotos.length > 0) {
-                        showPhotosButton.classList.remove('hidden');
-                    }
+                    refillMessagePool(); messageCycleCompleted = true;
+                    if(preloadedPhotos.length > 0) showPhotosButton.classList.remove('hidden');
                 }
                 const poolIndex = Math.floor(Math.random() * messagePool.length);
                 const message = messagePool.splice(poolIndex, 1)[0];
-                quoteContainer.textContent = `"${message}"`;
-                quoteButton.disabled = false;
+                quoteContainer.textContent = `"${message}"`; quoteButton.disabled = false;
             }, 300);
         }
         
-        // --- Photo Gallery Feature ---
         function displayPhoto() {
-            if (preloadedPhotos.length === 0) {
-                photoGallery.classList.add('hidden');
-                return;
-            }
+            if (preloadedPhotos.length === 0) { photoGallery.classList.add('hidden'); return; }
             galleryImg.src = preloadedPhotos[currentPhotoIndex];
+            viewedPhotos.add(currentPhotoIndex); // Track viewed photo
+            // Check if all photos have been viewed
+            if (viewedPhotos.size === preloadedPhotos.length) {
+                allPhotosViewed = true; // Set the flag instead of showing the button
+            }
         }
 
         function showNextPhoto() {
@@ -368,11 +342,27 @@
         function togglePhotoGallery() {
             if (preloadedPhotos.length > 0) {
                 const isHidden = photoGallery.classList.toggle('hidden');
-                if (!isHidden) {
-                    currentPhotoIndex = 0;
-                    displayPhoto();
+                if (!isHidden) { // If gallery is now SHOWN
+                    currentPhotoIndex = 0; 
+                    displayPhoto(); 
+                } else { // if gallery is now HIDDEN
+                    if (allPhotosViewed) {
+                        revealVideoButton.classList.remove('hidden');
+                    }
                 }
             }
+        }
+
+        function playVideo() {
+            videoPlayer.src = videoPath;
+            videoContainer.classList.remove('hidden');
+            videoPlayer.play();
+        }
+
+        function stopVideo() {
+            videoContainer.classList.add('hidden');
+            videoPlayer.pause();
+            videoPlayer.currentTime = 0; // Rewind video
         }
 
         // Event listeners
@@ -381,13 +371,13 @@
         showPhotosButton.addEventListener('click', togglePhotoGallery);
         nextPhoto.addEventListener('click', showNextPhoto);
         prevPhoto.addEventListener('click', showPrevPhoto);
+        revealVideoButton.addEventListener('click', playVideo);
+        closeVideo.addEventListener('click', stopVideo);
         window.addEventListener('resize', resizeCanvas, false);
         
-        // Initial setup
-        refillMessagePool(); // Fill the pool for the first time
+        refillMessagePool();
         resizeCanvas();
     </script>
 </body>
 </html>
-
 
