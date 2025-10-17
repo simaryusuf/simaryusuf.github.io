@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Heart Animation</title>
+    <title>Ozur Sitesi V2</title>
     <style>
         /* Make the body and canvas fill the entire screen with a dark background */
         html, body {
@@ -322,10 +322,16 @@
         function displayPhoto() {
             if (preloadedPhotos.length === 0) { photoGallery.classList.add('hidden'); return; }
             galleryImg.src = preloadedPhotos[currentPhotoIndex];
-            viewedPhotos.add(currentPhotoIndex); // Track viewed photo
-            // Check if all photos have been viewed
-            if (viewedPhotos.size === preloadedPhotos.length) {
-                allPhotosViewed = true; // Set the flag instead of showing the button
+            
+            // Track the photo only if it hasn't been seen before
+            if (!viewedPhotos.has(currentPhotoIndex)) {
+                viewedPhotos.add(currentPhotoIndex);
+                // Check if all photos have now been viewed
+                if (viewedPhotos.size === preloadedPhotos.length) {
+                    allPhotosViewed = true;
+                    // Show the reveal video button immediately
+                    revealVideoButton.classList.remove('hidden');
+                }
             }
         }
 
@@ -343,12 +349,9 @@
             if (preloadedPhotos.length > 0) {
                 const isHidden = photoGallery.classList.toggle('hidden');
                 if (!isHidden) { // If gallery is now SHOWN
+                    // Always start from the first photo when opening
                     currentPhotoIndex = 0; 
                     displayPhoto(); 
-                } else { // if gallery is now HIDDEN
-                    if (allPhotosViewed) {
-                        revealVideoButton.classList.remove('hidden');
-                    }
                 }
             }
         }
