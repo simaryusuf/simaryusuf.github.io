@@ -1,388 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>a a a</title>
+    <title>Bobrika Button</title>
+    <!-- Stil için Tailwind CSS yüklüyoruz -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Make the body and canvas fill the entire screen with a dark background */
+        /* Inter font kullanılıyor */
         html, body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            min-height: 100%; /* Ensure body is at least full height */
-            height: auto; /* Allow content to grow */
-            overflow-y: auto; /* Allow vertical scrolling if needed */
-            background-color: #111; /* Dark background color */
-            display: flex;
-            flex-direction: column; /* Stack items vertically */
-            justify-content: center;
-            align-items: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px 0; /* Add some padding at the top and bottom */
-        }
-        canvas {
-            display: block;
-            margin-bottom: 20px; /* Add some space below the canvas */
-        }
-        /* Styling for the buttons */
-        .button-container {
-            display: flex;
-            flex-wrap: wrap; /* Allow buttons to wrap on small screens */
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        button {
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            background-color: #ff69b4;
-            color: #111;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            z-index: 10;
-            transition: background-color 0.3s, transform 0.2s, opacity 0.5s;
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
-            opacity: 1;
-        }
-        button:hover {
-            background-color: #ff85c1;
-            transform: scale(1.05);
-        }
-        button:disabled {
-            background-color: #555;
-            color: #999;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        .hidden {
-            /* Use !important to ensure this rule overrides other display properties */
-            display: none !important;
-        }
-        /* Styling for the quote display */
-        #quoteContainer {
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-            color: #ffcce7;
-            font-size: 18px;
-            font-style: italic;
-            transition: opacity 0.5s ease-in-out;
-            opacity: 0;
-            min-height: 50px; /* Reserve space */
-            padding: 0 10px;
-        }
-        
-        /* Styling for the photo gallery container */
-        #photoGallery {
-            position: relative;
-            width: 90%;
-            max-width: 600px;
-            margin-top: 20px;
-            padding-bottom: 20px;
-        }
-        #photoGallery img {
-            width: 100%;
-            height: auto;
-            border-radius: 8px;
-            border: 3px solid #ff69b4;
-            box-shadow: 0 0 20px rgba(255, 105, 180, 0.6);
-            display: block;
-        }
-        .gallery-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-size: 3rem;
-            font-weight: bold;
-            cursor: pointer;
-            user-select: none;
-            padding: 0 20px;
-            transition: color 0.2s;
-            z-index: 5;
-            background-color: rgba(0,0,0,0.3);
-            border-radius: 50%;
-            line-height: 0.8;
-        }
-        .gallery-nav:hover {
-            color: #ff69b4;
-        }
-        #prevPhoto { left: -10px; }
-        #nextPhoto { right: -10px; }
-        
-        /* Styling for the video player overlay */
-        #videoContainer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
+            font-family: 'Inter', sans-serif;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+        }
+        /* İçeriği ortalamak için temel stiller */
+        body {
             display: flex;
-            justify-content: center;
             align-items: center;
-            z-index: 1000;
-        }
-        #videoPlayer {
-            max-width: 90%;
-            max-height: 90%;
-            border: 3px solid #ff69b4;
-            border-radius: 8px;
-        }
-        #closeVideo {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
-            color: white;
-            cursor: pointer;
+            justify-content: center;
+            background-color: #f3f4f6; /* Açık gri arka plan */
         }
     </style>
+    <!-- Inter font import ediliyor -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
-<body>
-    <canvas id="heartCanvas"></canvas>
-    
-    <div class="button-container">
-        <button id="drawButton">Draw Heart</button>
-        <button id="quoteButton" class="hidden">✨ Generate Message</button>
-        <button id="showPhotosButton" class="hidden">📷 View Photos</button>
-        <button id="revealVideoButton" class="hidden">🎬 Reveal Video</button>
-    </div>
-    
-    <div id="quoteContainer"></div>
+<body class="bg-gray-100">
 
-    <div id="photoGallery" class="hidden">
-        <span id="prevPhoto" class="gallery-nav">&lt;</span>
-        <img id="galleryImg" src="" alt="Photo">
-        <span id="nextPhoto" class="gallery-nav">&gt;</span>
-    </div>
+    <div class="text-center p-8 bg-white rounded-lg shadow-lg">
+        <!-- Metni gösteren buton -->
+        <button id="showButton" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-75 transition duration-200">
+            buraya bastır eralpettinim
+        </button>
 
-    <!-- Video Player Overlay -->
-    <div id="videoContainer" class="hidden">
-        <span id="closeVideo">&times;</span>
-        <video id="videoPlayer" controls></video>
+        <!-- Görünecek olan metin. Varsayılan olarak gizli. -->
+        <p id="hiddenText" class="hidden mt-6 text-4xl font-bold text-gray-800">
+            bobrika
+        </p>
     </div>
 
     <script>
-        // DOM Elements
-        const canvas = document.getElementById('heartCanvas');
-        const ctx = canvas.getContext('2d');
-        const drawButton = document.getElementById('drawButton');
-        const quoteButton = document.getElementById('quoteButton');
-        const quoteContainer = document.getElementById('quoteContainer');
-        const showPhotosButton = document.getElementById('showPhotosButton');
-        const photoGallery = document.getElementById('photoGallery');
-        const prevPhoto = document.getElementById('prevPhoto');
-        const nextPhoto = document.getElementById('nextPhoto');
-        const galleryImg = document.getElementById('galleryImg');
-        const revealVideoButton = document.getElementById('revealVideoButton');
-        const videoContainer = document.getElementById('videoContainer');
-        const videoPlayer = document.getElementById('videoPlayer');
-        const closeVideo = document.getElementById('closeVideo');
-        
-        // --- VIDEO PATH ---
-        // IMPORTANT: Make sure this path matches your folder and video file name.
-        const videoPath = "videos/our-video.mp4";
+        // Buton ve metin elementlerini dökümandan al
+        const button = document.getElementById('showButton');
+        const textToShow = document.getElementById('hiddenText');
 
-        // --- PRE-LOADED PHOTOS ---
-        const preloadedPhotos = [
-            "images/1.jpg","images/2.jpg","images/3.jpg","images/4.jpg","images/5.jpg",
-            "images/6.jpg","images/7.jpg","images/8.jpg","images/9.jpg","images/0.jpg",
-            "images/00.jpg","images/11.jpg","images/12.jpg","images/13.jpg","images/14.jpg",
-            "images/15.jpg","images/16.jpg","images/17.jpg","images/18.jpg","images/19.jpg"
-        ];
-
-        // State Variables
-        let heartAnimationId = null, mAnimationId = null;
-        let currentT = Math.PI, mProgress = 0;
-        const endT = 3 * Math.PI, step = 0.03;
-        const mPath = [];
-        let currentPhotoIndex = 0;
-        let messageCycleCompleted = false;
-        let viewedPhotos = new Set();
-        let allPhotosViewed = false; // Flag to track if the photo cycle is complete
-
-        function resizeCanvas() {
-            const size = Math.min(window.innerWidth * 0.9, window.innerHeight * 0.5);
-            canvas.width = size;
-            canvas.height = size;
-            if (heartAnimationId) cancelAnimationFrame(heartAnimationId);
-            if (mAnimationId) cancelAnimationFrame(mAnimationId);
-            heartAnimationId = mAnimationId = null;
-            drawButton.disabled = false;
-            drawButton.textContent = "Draw Heart";
-            [quoteButton, showPhotosButton, revealVideoButton].forEach(btn => btn.classList.add('hidden'));
-            quoteContainer.style.opacity = 0;
-            photoGallery.classList.add('hidden');
-            videoContainer.classList.add('hidden');
-        }
-
-        function drawDot(x, y, color, size) {
-            ctx.beginPath(); ctx.fillStyle = color;
-            ctx.arc(x, y, size, 0, Math.PI * 2); ctx.fill();
-        }
-
-        function calculateMPath() {
-            mPath.length = 0;
-            const centerX = canvas.width / 2, centerY = canvas.height / 2;
-            const scale = canvas.width / 70, mHeight = scale * 6, mWidth = scale * 6;
-            const valleyDepth = centerY + mHeight * 0.1;
-            const p = [
-                { x: centerX - mWidth, y: centerY + mHeight / 2 },
-                { x: centerX - mWidth, y: centerY - mHeight / 3 },
-                { x: centerX - mWidth / 2, y: centerY - mHeight / 2 },
-                { x: centerX, y: valleyDepth },
-                { x: centerX + mWidth / 2, y: centerY - mHeight / 2 },
-                { x: centerX + mWidth, y: centerY - mHeight / 3 },
-                { x: centerX + mWidth, y: centerY + mHeight / 2 }
-            ];
-            const segments = 40;
-            for (let i = 0; i <= segments; i++) {
-                const t = i / segments;
-                const x = Math.pow(1 - t, 3) * p[0].x + 3 * Math.pow(1 - t, 2) * t * p[1].x + 3 * (1 - t) * Math.pow(t, 2) * p[2].x + Math.pow(t, 3) * p[3].x;
-                const y = Math.pow(1 - t, 3) * p[0].y + 3 * Math.pow(1 - t, 2) * t * p[1].y + 3 * (1 - t) * Math.pow(t, 2) * p[2].y + Math.pow(t, 3) * p[3].y;
-                mPath.push({ x, y });
-            }
-            for (let i = 1; i <= segments; i++) {
-                const t = i / segments;
-                const x = Math.pow(1 - t, 3) * p[3].x + 3 * Math.pow(1 - t, 2) * t * p[4].x + 3 * (1 - t) * Math.pow(t, 2) * p[5].x + Math.pow(t, 3) * p[6].x;
-                const y = Math.pow(1 - t, 3) * p[3].y + 3 * Math.pow(1 - t, 2) * t * p[4].y + 3 * (1 - t) * Math.pow(t, 2) * p[5].y + Math.pow(t, 3) * p[6].y;
-                mPath.push({ x, y });
-            }
-        }
-        
-        function animateM() {
-            if (mProgress >= mPath.length - 1) {
-                cancelAnimationFrame(mAnimationId); mAnimationId = null;
-                quoteButton.classList.remove('hidden'); return;
-            }
-            ctx.strokeStyle = '#ff69b4'; ctx.lineWidth = Math.max(4, canvas.width / 120);
-            ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-            ctx.beginPath();
-            ctx.moveTo(mPath[mProgress].x, mPath[mProgress].y);
-            ctx.lineTo(mPath[mProgress + 1].x, mPath[mProgress + 1].y);
-            ctx.stroke();
-            mProgress++;
-            mAnimationId = requestAnimationFrame(animateM);
-        }
-
-        function startMAnimation() { mProgress = 0; calculateMPath(); animateM(); }
-        
-        function animateHeart() {
-            if (currentT > endT) {
-                heartAnimationId = null; drawButton.disabled = false;
-                drawButton.textContent = "Draw Again"; startMAnimation(); return;
-            }
-            const scale = canvas.width / 40, centerX = canvas.width / 2, centerY = canvas.height / 2;
-            const hx = 16 * Math.pow(Math.sin(currentT), 3);
-            const hy = 13 * Math.cos(currentT) - 5 * Math.cos(2 * currentT) - 2 * Math.cos(3 * currentT) - Math.cos(4 * currentT);
-            drawDot(centerX + hx * scale, centerY - hy * scale, '#ff69b4', Math.max(2, canvas.width / 200));
-            currentT += step;
-            heartAnimationId = requestAnimationFrame(animateHeart);
-        }
-
-        function startAnimation() {
-            if (heartAnimationId) cancelAnimationFrame(heartAnimationId);
-            if (mAnimationId) cancelAnimationFrame(mAnimationId);
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            currentT = Math.PI;
-            drawButton.disabled = true; drawButton.textContent = "Drawing...";
-            [quoteButton, showPhotosButton, revealVideoButton].forEach(btn => btn.classList.add('hidden'));
-            photoGallery.classList.add('hidden');
-            quoteContainer.style.opacity = 0; quoteContainer.textContent = '';
-            messageCycleCompleted = false;
-            viewedPhotos.clear();
-            allPhotosViewed = false; // Reset the flag
-            animateHeart();
-        }
-
-        const customMessages = [
-            "a"
-        ];
-        let messagePool = [];
-        function refillMessagePool() { messagePool = [...customMessages]; }
-        
-        function showCustomMessage() {
-            quoteContainer.style.opacity = 1; quoteContainer.textContent = '...';
-            quoteButton.disabled = true;
-            setTimeout(() => {
-                if (messagePool.length === 0) {
-                    refillMessagePool(); messageCycleCompleted = true;
-                    if(preloadedPhotos.length > 0) showPhotosButton.classList.remove('hidden');
-                }
-                const poolIndex = Math.floor(Math.random() * messagePool.length);
-                const message = messagePool.splice(poolIndex, 1)[0];
-                quoteContainer.textContent = `"${message}"`; quoteButton.disabled = false;
-            }, 300);
-        }
-        
-        function displayPhoto() {
-            if (preloadedPhotos.length === 0) { photoGallery.classList.add('hidden'); return; }
-            galleryImg.src = preloadedPhotos[currentPhotoIndex];
-            
-            // Track the photo only if it hasn't been seen before
-            if (!viewedPhotos.has(currentPhotoIndex)) {
-                viewedPhotos.add(currentPhotoIndex);
-                // Check if all photos have now been viewed
-                if (viewedPhotos.size === preloadedPhotos.length) {
-                    allPhotosViewed = true;
-                    // Show the reveal video button immediately
-                    revealVideoButton.classList.remove('hidden');
-                }
-            }
-        }
-
-        function showNextPhoto() {
-            currentPhotoIndex = (currentPhotoIndex + 1) % preloadedPhotos.length;
-            displayPhoto();
-        }
-        
-        function showPrevPhoto() {
-            currentPhotoIndex = (currentPhotoIndex - 1 + preloadedPhotos.length) % preloadedPhotos.length;
-            displayPhoto();
-        }
-
-        function togglePhotoGallery() {
-            if (preloadedPhotos.length > 0) {
-                const isHidden = photoGallery.classList.toggle('hidden');
-                if (!isHidden) { // If gallery is now SHOWN
-                    // Always start from the first photo when opening
-                    currentPhotoIndex = 0; 
-                    displayPhoto(); 
-                }
-            }
-        }
-
-        function playVideo() {
-            videoPlayer.src = videoPath;
-            videoContainer.classList.remove('hidden');
-            videoPlayer.play();
-        }
-
-        function stopVideo() {
-            videoContainer.classList.add('hidden');
-            videoPlayer.pause();
-            videoPlayer.currentTime = 0; // Rewind video
-        }
-
-        // Event listeners
-        drawButton.addEventListener('click', startAnimation);
-        quoteButton.addEventListener('click', showCustomMessage); 
-        showPhotosButton.addEventListener('click', togglePhotoGallery);
-        nextPhoto.addEventListener('click', showNextPhoto);
-        prevPhoto.addEventListener('click', showPrevPhoto);
-        revealVideoButton.addEventListener('click', playVideo);
-        closeVideo.addEventListener('click', stopVideo);
-        window.addEventListener('resize', resizeCanvas, false);
-        
-        refillMessagePool();
-        resizeCanvas();
+        // Butona bir event listener ekle
+        // Butona tıklandığında bu fonksiyon çalışacak
+        button.addEventListener('click', function() {
+            // Metin elementinden 'hidden' sınıfını kaldırarak görünür yap
+            textToShow.classList.remove('hidden');
+        });
     </script>
+
 </body>
 </html>
-
 
 
