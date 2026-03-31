@@ -76,6 +76,251 @@
 
     <div class="question-card">
         <h3>1. Soru</h3>
+        <div class="goal">Amac: Programin ekrana "Merhaba" yazdirip kapanmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+
+using namespace std;
+
+int main()
+{
+    cout &lt;&lt; "Merhaba"
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> <code>cout</code> satirinin sonunda noktali virgul ( ; ) eksik.</p>
+                <p><strong>Cozum:</strong> Dogrusu <code>cout &lt;&lt; "Merhaba";</code> olmalidir.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>2. Soru</h3>
+        <div class="goal">Amac: Programin x degiskenine atanan 5 degerini ekrana yazdirmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+
+int main()
+{
+    int x;
+
+    x = 5;
+
+    cout &lt;&lt; x;
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> Kutuphane eklendikten sonra <code>using namespace std;</code> komutu yazilmamis. Bu yuzden program cout komutunu taniyamaz.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>3. Soru</h3>
+        <div class="goal">Amac: Programin x degiskeni 10'a esit oldugunda ekrana "Sayi 10" yazdirmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+
+using namespace std;
+
+int main()
+{
+    int x;
+
+    x = 10;
+
+    if(x = 10)
+    {
+        cout &lt;&lt; "Sayi 10" &lt;&lt; endl;
+    }
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> <code>if</code> kosulunun icinde atama operatoru olan tek esittir ( = ) kullanilmis. Karsilastirma yapmak icin cift esittir ( == ) kullanilmalidir.</p>
+                <p><strong>Cozum:</strong> Dogrusu <code>if(x == 10)</code> olmalidir.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>4. Soru</h3>
+        <div class="goal">Amac: Programin x ve y degiskenlerini toplayip sonucu ekrana yazdirmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+
+using namespace std;
+
+int main()
+{
+    int x;
+    int toplam;
+
+    x = 5;
+    y = 3;
+
+    toplam = x + y;
+
+    cout &lt;&lt; toplam;
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> <code>y</code> degiskenine bir deger atanmis fakat kodun basinda y degiskeni tanimlanmamistir.</p>
+                <p><strong>Cozum:</strong> Baslangica <code>int y;</code> eklenmelidir.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>5. Soru</h3>
+        <div class="goal">Amac: Programin 1'den 5'e kadar olan sayilari (5 dahil) alt alta yazdirmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+
+using namespace std;
+
+int main()
+{
+    int i;
+
+    for(i = 1; i &lt; 5; i++)
+    {
+        cout &lt;&lt; i &lt;&lt; endl;
+    }
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> Dongu kosulu <code>i &lt; 5</code> olarak yazildigi icin program 4'te durur ve 5'i yazdirmaz.</p>
+                <p><strong>Cozum:</strong> Dogrusu <code>i &lt;= 5</code> olmalidir.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>6. Soru</h3>
+        <div class="goal">Amac: Programin isim degiskenine "Ali" kelimesini atayip ekrana yazdirmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+using namespace std;
+
+int main()
+{
+    string isim;
+
+    isim = 'Ali';
+
+    cout &lt;&lt; isim;
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> Metinler (string) cift tirnak ( " " ) icerisinde yazilmalidir. Tek tirnak ( ' ' ) sadece tek bir karakter (char) tanimlarken kullanilir.</p>
+                <p><strong>Cozum:</strong> Dogrusu <code>isim = "Ali";</code> olmalidir.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>7. Soru</h3>
+        <div class="goal">Amac: Programin 5'ten 1'e kadar geriye dogru saymasi ve bunlari ekrana yazdirmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+
+using namespace std;
+
+int main()
+{
+    int i;
+
+    for(i = 5; i &gt; 0; i++)
+    {
+        cout &lt;&lt; i &lt;&lt; endl;
+    }
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> Dongu icindeki <code>i</code> degeri her adimda azaltilmak yerine artirilmistir ( i++ ). Bu durum programi sonsuz donguye sokar.</p>
+                <p><strong>Cozum:</strong> Dogrusu <code>i--</code> olmalidir.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>8. Soru</h3>
+        <div class="goal">Amac: Programin 1'den 3'e kadar olan sayilarin toplamini (1+2+3) bulup ekrana sadece sonucu yazdirmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+
+using namespace std;
+
+int main()
+{
+    int i;
+    int toplam;
+
+    for(i = 1; i &lt;= 3; i++)
+    {
+        toplam = toplam + i;
+    }
+
+    cout &lt;&lt; toplam;
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> <code>toplam</code> degiskeni olusturulmus ancak baslangic degeri olarak 0 atanmamistir. Bu yuzden bilgisayar bellekteki rastgele (cop) bir sayinin uzerine ekleme yapar ve sonuc yanlis cikar.</p>
+                <p><strong>Cozum:</strong> Tanimlarken <code>int toplam = 0;</code> seklinde baslangic degeri verilmelidir.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>9. Soru</h3>
+        <div class="goal">Amac: Programin x ve y degiskenlerini bolup, 2.5 olan kusuratli sonucu ekrana tam ve dogru yazdirmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+
+using namespace std;
+
+int main()
+{
+    int x;
+    int y;
+    double z;
+
+    x = 5;
+    y = 2;
+    z = x / y;
+
+    cout &lt;&lt; z;
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> <code>x</code> ve <code>y</code> tam sayi ( int ) olarak tanimlandigi icin bolme isleminin sonucu da tam sayi cikar. z degiskeni double olsa bile islem coktan tam sayi olarak yapilmistir.</p>
+                <p><strong>Cozum:</strong> Kusuratli sonuc almak icin islem sirasinda tur donusumu yapilmali: <code>z = (double)x / y;</code> veya x degiskeni en bastan double olarak tanimlanmalidir.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>10. Soru</h3>
         <div class="goal">Amac: 20 sayisinin karekokunu bulup ekrana yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -112,7 +357,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>2. Soru</h3>
+        <h3>11. Soru</h3>
         <div class="goal">Amac: Ekrana tam 3 kere "Merhaba" yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -148,7 +393,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>3. Soru</h3>
+        <h3>12. Soru</h3>
         <div class="goal">Amac: x degiskeninin degeri sadece 1 oldugunda ekrana onay mesaji yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -184,7 +429,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>4. Soru</h3>
+        <h3>13. Soru</h3>
         <div class="goal">Amac: 2 uzeri 3 (2^3) islemini hesaplayip sonucu yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -220,7 +465,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>5. Soru</h3>
+        <h3>14. Soru</h3>
         <div class="goal">Amac: Sadece x degeri 5'ten buyukse ekrana mesaj yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -256,7 +501,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>6. Soru</h3>
+        <h3>15. Soru</h3>
         <div class="goal">Amac: 5'i 2'ye bolerek tam ve ondalikli kismiyla (2.5) elde etmek.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -293,7 +538,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>7. Soru</h3>
+        <h3>16. Soru</h3>
         <div class="goal">Amac: Dongu icinde toplanan y degerini, dongu bittikten sonra ekrana dogru sekilde yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -330,7 +575,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>8. Soru</h3>
+        <h3>17. Soru</h3>
         <div class="goal">Amac: 1'den 3'e kadar olan sayilarin toplamini y degiskeninde biriktirmek.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -366,7 +611,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>9. Soru</h3>
+        <h3>18. Soru</h3>
         <div class="goal">Amac: Sadece negatif olmayan (gecerli) sayilarin karekokunu hesaplamak.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -396,14 +641,14 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>if (x &lt; 0)</code> sarti yanlistir cunku negatif sayilarin karekoku programi hataya (NaN) surukler.</p>
+                <p><strong>Hata:</strong> <code>if (x &lt; 0)</code> sarti yanlistir cunku negatif sayilarin karekoku programi hataya surukler.</p>
                 <p><strong>Cozum:</strong> Sayi sifirdan buyuk veya esit olmali: <code>if (x &gt;= 0)</code></p>
             </div>
         </details>
     </div>
 
     <div class="question-card">
-        <h3>10. Soru</h3>
+        <h3>19. Soru</h3>
         <div class="goal">Amac: Sayinin ayni anda hem pozitif hem de cift sayi oldugunu dogrulamak.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -439,7 +684,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>11. Soru</h3>
+        <h3>20. Soru</h3>
         <div class="goal">Amac: x ile belirtilen gunun hafta sonu (Cumartesi yani 6 veya Pazar yani 7) olup olmadigini kontrol etmek.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -475,7 +720,7 @@ int main()
     </div>
 
     <div class="question-card">
-        <h3>12. Soru</h3>
+        <h3>21. Soru</h3>
         <div class="goal">Amac: Girilen notun 1 ile 100 arasinda (1 ve 100 dahil) gecerli bir not olup olmadigini kontrol etmek.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
@@ -509,6 +754,9 @@ int main()
             </div>
         </details>
     </div>
+
+
+<p> Meric Yikar icin hazirlanmis ozel cpp debugging soru sitesidir. </p>
 
 </body>
 </html>
