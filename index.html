@@ -71,7 +71,7 @@
 </head>
 <body>
 
-    <h1>C++ Hata Ayiklama Egzersizleri</h1>
+    <h1>C++ Hata Ayiklama Egzersizleri (Sadece IF ve Temeller)</h1>
     <p>Asagidaki kodlarin her birinde sadece bir tane mantik veya yazim hatasi bulunmaktadir. Kodun altindaki amaca ulasmasini engelleyen hatayi bulun ve "Cevabi Goster" butonuna tiklayarak kontrol edin.</p>
 
     <div class="question-card">
@@ -128,9 +128,7 @@ using namespace std;
 
 int main()
 {
-    int x;
-
-    x = 10;
+    int x = 10;
 
     if(x = 10)
     {
@@ -172,7 +170,7 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>y</code> degiskenine bir deger atanmis fakat kodun basinda y degiskeni tanimlanmamistir.</p>
+                <p><strong>Hata:</strong> <code>y</code> degiskenine bir deger atanmis fakat kodun basinda tanimlanmamistir.</p>
                 <p><strong>Cozum:</strong> Baslangica <code>int y;</code> eklenmelidir.</p>
             </div>
         </details>
@@ -180,18 +178,22 @@ int main()
 
     <div class="question-card">
         <h3>5. Soru</h3>
-        <div class="goal">Amac: Programin 1'den 5'e kadar olan sayilari (5 dahil) alt alta yazdirmasi isteniyor.</div>
+        <div class="goal">Amac: Sayi 10'dan buyukse ekrana "Buyuk", degilse "Kucuk veya Esit" yazdirsin.</div>
         <pre><code>#include &lt;iostream&gt;
 
 using namespace std;
 
 int main()
 {
-    int i;
+    int x = 5;
 
-    for(i = 1; i &lt; 5; i++)
+    if(x &gt; 10)
     {
-        cout &lt;&lt; i &lt;&lt; endl;
+        cout &lt;&lt; "Buyuk" &lt;&lt; endl;
+    }
+    else(x &lt;= 10)
+    {
+        cout &lt;&lt; "Kucuk veya Esit" &lt;&lt; endl;
     }
 
     return 0;
@@ -199,8 +201,8 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> Dongu kosulu <code>i &lt; 5</code> olarak yazildigi icin program 4'te durur ve 5'i yazdirmaz.</p>
-                <p><strong>Cozum:</strong> Dogrusu <code>i &lt;= 5</code> olmalidir.</p>
+                <p><strong>Hata:</strong> <code>else</code> komutunun yanina sart parantezi ( ) yazilamaz. else, geri kalan tum durumlari kapsar.</p>
+                <p><strong>Cozum:</strong> Ya sarti tamamen silip sadece <code>else</code> yazilmalidir, ya da <code>else if(x &lt;= 10)</code> kullanilmalidir.</p>
             </div>
         </details>
     </div>
@@ -234,64 +236,33 @@ int main()
 
     <div class="question-card">
         <h3>7. Soru</h3>
-        <div class="goal">Amac: Programin 5'ten 1'e kadar geriye dogru saymasi ve bunlari ekrana yazdirmasi isteniyor.</div>
+        <div class="goal">Amac: x degeri 0'dan buyukse ekrana alt alta "Pozitif" ve "Sayi" yazdirsin. Sifir veya negatifse HICBIR SEY yazdirmasin. (Su an x = -5)</div>
         <pre><code>#include &lt;iostream&gt;
 
 using namespace std;
 
 int main()
 {
-    int i;
+    int x = -5;
 
-    for(i = 5; i &gt; 0; i++)
-    {
-        cout &lt;&lt; i &lt;&lt; endl;
-    }
+    if(x &gt; 0)
+        cout &lt;&lt; "Pozitif" &lt;&lt; endl;
+        cout &lt;&lt; "Sayi" &lt;&lt; endl;
 
     return 0;
 }</code></pre>
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> Dongu icindeki <code>i</code> degeri her adimda azaltilmak yerine artirilmistir ( i++ ). Bu durum programi sonsuz donguye sokar.</p>
-                <p><strong>Cozum:</strong> Dogrusu <code>i--</code> olmalidir.</p>
+                <p><strong>Hata:</strong> <code>if</code> blogunda suslu parantez <code>{ }</code> kullanilmadigi icin, if sarti sadece ilk satiri kapsar. Ikinci satir ("Sayi") if'ten bagimsizdir ve sayi negatif olsa bile her zaman ekrana yazdirilir.</p>
+                <p><strong>Cozum:</strong> Iki cout islemini de suslu parantez <code>{ }</code> icine almalisiniz.</p>
             </div>
         </details>
     </div>
 
     <div class="question-card">
         <h3>8. Soru</h3>
-        <div class="goal">Amac: Programin 1'den 3'e kadar olan sayilarin toplamini (1+2+3) bulup ekrana sadece sonucu yazdirmasi isteniyor.</div>
-        <pre><code>#include &lt;iostream&gt;
-
-using namespace std;
-
-int main()
-{
-    int i;
-    int toplam;
-
-    for(i = 1; i &lt;= 3; i++)
-    {
-        toplam = toplam + i;
-    }
-
-    cout &lt;&lt; toplam;
-
-    return 0;
-}</code></pre>
-        <details>
-            <summary>Cevabi Goster</summary>
-            <div class="answer-content">
-                <p><strong>Hata:</strong> <code>toplam</code> degiskeni olusturulmus ancak baslangic degeri olarak 0 atanmamistir. Bu yuzden bilgisayar bellekteki rastgele (cop) bir sayinin uzerine ekleme yapar ve sonuc yanlis cikar.</p>
-                <p><strong>Cozum:</strong> Tanimlarken <code>int toplam = 0;</code> seklinde baslangic degeri verilmelidir.</p>
-            </div>
-        </details>
-    </div>
-
-    <div class="question-card">
-        <h3>9. Soru</h3>
-        <div class="goal">Amac: Programin x ve y degiskenlerini bolup, 2.5 olan kusuratli sonucu ekrana tam ve dogru yazdirmasi isteniyor.</div>
+        <div class="goal">Amac: Tanimlanan x degiskeninin degerini ekrana yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
 
 using namespace std;
@@ -299,11 +270,33 @@ using namespace std;
 int main()
 {
     int x;
-    int y;
+
+    cout &lt;&lt; x;
+
+    return 0;
+}</code></pre>
+        <details>
+            <summary>Cevabi Goster</summary>
+            <div class="answer-content">
+                <p><strong>Hata:</strong> <code>x</code> degiskenine baslangic degeri atanmamistir. Bu durumda bilgisayar, bellekte o an bulunan rastgele (cop) bir degeri ekrana yazdirir.</p>
+                <p><strong>Cozum:</strong> Tanimlarken veya hemen sonrasinda <code>x = 0;</code> gibi bir deger verilmelidir.</p>
+            </div>
+        </details>
+    </div>
+
+    <div class="question-card">
+        <h3>9. Soru</h3>
+        <div class="goal">Amac: Programin x ve y degiskenlerini bolup, 2.5 olan kusuratli sonucu z'ye atayarak ekrana dogru yazdirmasi isteniyor.</div>
+        <pre><code>#include &lt;iostream&gt;
+
+using namespace std;
+
+int main()
+{
+    int x = 5;
+    int y = 2;
     double z;
 
-    x = 5;
-    y = 2;
     z = x / y;
 
     cout &lt;&lt; z;
@@ -313,15 +306,15 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>x</code> ve <code>y</code> tam sayi ( int ) olarak tanimlandigi icin bolme isleminin sonucu da tam sayi cikar. z degiskeni double olsa bile islem coktan tam sayi olarak yapilmistir.</p>
-                <p><strong>Cozum:</strong> Kusuratli sonuc almak icin islem sirasinda tur donusumu yapilmali: <code>z = (double)x / y;</code> veya x degiskeni en bastan double olarak tanimlanmalidir.</p>
+                <p><strong>Hata:</strong> <code>x</code> ve <code>y</code> tam sayi ( int ) olarak tanimlandigi icin bolme isleminin sonucu da tam sayi cikar (0.5 yutulur). z degiskeni double olsa bile islem coktan 2 olarak gerceklesmistir.</p>
+                <p><strong>Cozum:</strong> Kusuratli sonuc almak icin islem sirasinda tur donusumu yapilmali: <code>z = (double)x / y;</code></p>
             </div>
         </details>
     </div>
 
     <div class="question-card">
         <h3>10. Soru</h3>
-        <div class="goal">Amac: 20 sayisinin karekokunu bulup ekrana yazdirmak.</div>
+        <div class="goal">Amac: 20 sayisinin karekokunu bulup z degiskeni ile ekrana yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
 
@@ -329,15 +322,8 @@ using namespace std;
 
 int main()
 {
-   int i;
    int x = 20;
-   int y = 0;
    double z;
-
-   for (i = 1; i &lt; 4; i++)
-   {
-         y = x + i;
-   }
 
    if (x == 20)
    {
@@ -350,7 +336,7 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>if</code> blogunun icinde <code>int z = sqrt(x);</code> yazilmis. Hem <code>z</code> onceden double olarak tanimlanmisti, hem de <code>sqrt</code> ondalikli bir deger dondurur, int yapilmamalidir.</p>
+                <p><strong>Hata:</strong> <code>if</code> blogunun icinde <code>int z = sqrt(x);</code> yazilmis. Hem <code>z</code> onceden double olarak tanimlanmisti, hem de <code>sqrt</code> ondalikli bir deger dondurur, int yapilirsa kusurat kaybolur.</p>
                 <p><strong>Cozum:</strong> Bastaki int kelimesi silinmeli: <code>z = sqrt(x);</code></p>
             </div>
         </details>
@@ -358,27 +344,18 @@ int main()
 
     <div class="question-card">
         <h3>11. Soru</h3>
-        <div class="goal">Amac: Ekrana tam 3 kere "Merhaba" yazdirmak.</div>
+        <div class="goal">Amac: x sayisinin tam olarak 10 ile 20 arasinda (haric) oldugunu dogrulamak. (Su an x = 50)</div>
         <pre><code>#include &lt;iostream&gt;
-#include &lt;cmath&gt;
 
 using namespace std;
 
 int main()
 {
-   int i;
-   int x = 1;
-   int y = 0;
-   double z = 0.0;
+   int x = 50;
 
-   for (i = 1; i &lt; 4; i--) // i = i - 1
+   if (10 &lt; x &lt; 20) 
    {
-         cout &lt;&lt; "Merhaba" &lt;&lt; endl;
-   }
-
-   if (x == 1)
-   {
-       y = 5;
+       cout &lt;&lt; "Sayi 10 ile 20 arasindadir!" &lt;&lt; endl;
    }
 
    return 0;
@@ -386,51 +363,45 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>for</code> dongusunde <code>i--</code> kullanilmis. <code>i</code> 1'den baslayip azaldigi icin <code>i &lt; 4</code> sarti her zaman dogru olur ve sonsuz donguye girer.</p>
-                <p><strong>Cozum:</strong> <code>i</code> artirilmali: <code>i++</code></p>
+                <p><strong>Hata:</strong> Matematikteki gibi zincirleme kiyaslama C++'ta beklenen sonucu vermez. C++ bunu soldan saga isler: (10 &lt; 50) kiyaslamasi dogrudur ve 1 sonucunu uretir. Sonra (1 &lt; 20) kiyaslamasi da dogru cikar ve 50 sayisi sartlari saglamis gibi iceri girer.</p>
+                <p><strong>Cozum:</strong> Araya VE operatoru konmalidir: <code>if(x &gt; 10 && x &lt; 20)</code></p>
             </div>
         </details>
     </div>
 
     <div class="question-card">
         <h3>12. Soru</h3>
-        <div class="goal">Amac: x degiskeninin degeri sadece 1 oldugunda ekrana onay mesaji yazdirmak.</div>
+        <div class="goal">Amac: x pozitifse "Pozitif", negatifse "Negatif", hicbiri degilse "Sifir" yazdirsin. (Su an x = 5)</div>
         <pre><code>#include &lt;iostream&gt;
-#include &lt;cmath&gt;
 
 using namespace std;
 
 int main()
 {
-   int i;
-   int x = 0;
-   int y = 0;
-   double z = 0.0;
+   int x = 5;
 
-   for (i = 1; i &lt; 4; i++)
-   {
-         x = x + 1;
-   }
+   if (x &gt; 0)
+       cout &lt;&lt; "Pozitif" &lt;&lt; endl;
 
-   if (x = 1)
-   {
-       cout &lt;&lt; "x'in degeri 1'dir!" &lt;&lt; endl;
-   }
+   if (x &lt; 0)
+       cout &lt;&lt; "Negatif" &lt;&lt; endl;
+   else
+       cout &lt;&lt; "Sifir" &lt;&lt; endl;
 
    return 0;
 }</code></pre>
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>if (x = 1)</code> karsilastirma yapmaz, x'i 1 yapar ve sarti hep dogru kabul eder.</p>
-                <p><strong>Cozum:</strong> Karsilastirma icin cift esittir kullanilmali: <code>if (x == 1)</code></p>
+                <p><strong>Hata:</strong> Ortadaki satira <code>else if</code> degil sadece <code>if</code> yazildigi icin, alttaki <code>else</code> sadece ikinci if'e baglanir. Bu durumda program x=5 oldugunda once "Pozitif" yazar, ardindan x 0'dan kucuk olmadigi icin else blogu calisir ve bir de "Sifir" yazar.</p>
+                <p><strong>Cozum:</strong> Ikinci sart <code>else if (x &lt; 0)</code> olarak degistirilmelidir.</p>
             </div>
         </details>
     </div>
 
     <div class="question-card">
         <h3>13. Soru</h3>
-        <div class="goal">Amac: 2 uzeri 3 (2^3) islemini hesaplayip sonucu yazdirmak.</div>
+        <div class="goal">Amac: 2 uzeri 3 (2^3) islemini hesaplayip sonucu yazdirmak. (8 bekleniyor)</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
 
@@ -438,17 +409,13 @@ using namespace std;
 
 int main()
 {
-   int i;
-   int x = 2; 
-   int y = 3; 
-   double z = 0.0;
+   int taban = 2; 
+   int us = 3; 
+   double z;
 
-   for (i = 1; i &lt; 4; i++)
-   {
-         z = pow(y, x); 
-   }
+   z = pow(us, taban); 
 
-   if (x == 2)
+   if (taban == 2)
    {
        cout &lt;&lt; "Sonuc: " &lt;&lt; z &lt;&lt; endl;
    }
@@ -458,31 +425,22 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>pow(y, x)</code> 3 uzeri 2 hesaplar (sonuc 9). Bizden 2 uzeri 3 isteniyor.</p>
-                <p><strong>Cozum:</strong> Parametrelerin yeri degistirilmeli: <code>z = pow(x, y);</code></p>
+                <p><strong>Hata:</strong> <code>pow</code> fonksiyonuna parametreler ters verilmis. <code>pow(us, taban)</code> 3 uzeri 2 hesaplar ve sonuc 9 cikar.</p>
+                <p><strong>Cozum:</strong> Parametrelerin yeri degistirilmeli: <code>z = pow(taban, us);</code></p>
             </div>
         </details>
     </div>
 
     <div class="question-card">
         <h3>14. Soru</h3>
-        <div class="goal">Amac: Sadece x degeri 5'ten buyukse ekrana mesaj yazdirmak.</div>
+        <div class="goal">Amac: Sadece x degeri 5'ten buyukse ekrana mesaj yazdirmak. (Su an x = 3)</div>
         <pre><code>#include &lt;iostream&gt;
-#include &lt;cmath&gt;
 
 using namespace std;
 
 int main()
 {
-   int i;
    int x = 3;
-   int y = 0;
-   double z = 0.0;
-
-   for (i = 1; i &lt; 4; i++)
-   {
-         y = y + i;
-   }
 
    if (x &gt; 5);
    {
@@ -494,7 +452,7 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>if (x &gt; 5);</code> sonundaki noktali virgul sarti bitirir. Suslu parantez icindeki kod sarta bagli olmadan surekli calisir.</p>
+                <p><strong>Hata:</strong> <code>if (x &gt; 5);</code> sonundaki noktali virgul sarti o satirda aninda bitirir. Suslu parantez icindeki kod parantezi bagimsiz bir kod bloguna donusur ve sart saglanmasa da calisir.</p>
                 <p><strong>Cozum:</strong> Noktali virgul silinmeli: <code>if (x &gt; 5) { ... }</code></p>
             </div>
         </details>
@@ -502,28 +460,18 @@ int main()
 
     <div class="question-card">
         <h3>15. Soru</h3>
-        <div class="goal">Amac: 5'i 2'ye bolerek tam ve ondalikli kismiyla (2.5) elde etmek.</div>
+        <div class="goal">Amac: Girilen yas 18 ve uzeri ise (18 dahil) "Resit" yazdirmak. (Su an yas = 18)</div>
         <pre><code>#include &lt;iostream&gt;
-#include &lt;cmath&gt;
 
 using namespace std;
 
 int main()
 {
-   int i;
-   int x = 5;
-   int y = 2;
-   double z = 0.0;
+   int yas = 18;
 
-   for (i = 1; i &lt; 4; i++)
+   if (yas &gt; 18)
    {
-         y = y + i;
-   }
-
-   if (x == 5)
-   {
-       z = x / 2; 
-       cout &lt;&lt; "Bolme sonucu: " &lt;&lt; z &lt;&lt; endl;
+       cout &lt;&lt; "Resit" &lt;&lt; endl;
    }
 
    return 0;
@@ -531,88 +479,74 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> x ve 2 tam sayi oldugu icin islem ondalik kismi atarak 2 sonucunu verir (Tam sayi bolmesi).</p>
-                <p><strong>Cozum:</strong> Sayilardan en az biri ondalikli belirtilmeli: <code>z = x / 2.0;</code></p>
+                <p><strong>Hata:</strong> Sadece buyuktur isareti (<code>&gt;</code>) kullanildigi icin, yas tam 18 oldugunda sart saglanmaz ve ekrana hicbir sey basilmaz.</p>
+                <p><strong>Cozum:</strong> Buyuk veya esittir operatoru kullanilmali: <code>if (yas &gt;= 18)</code></p>
             </div>
         </details>
     </div>
 
     <div class="question-card">
         <h3>16. Soru</h3>
-        <div class="goal">Amac: Dongu icinde toplanan y degerini, dongu bittikten sonra ekrana dogru sekilde yazdirmak.</div>
+        <div class="goal">Amac: x 10'a esit oldugunda sonuc degiskenine 50 atamak ve bu degeri if blogunun disinda ekrana yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
-#include &lt;cmath&gt;
 
 using namespace std;
 
 int main()
 {
-   int i;
-   int x = 1;
-   int y = 0;
-   double z = 0.0;
+   int x = 10;
 
-   for (i = 1; i &lt; 4; i++)
+   if (x == 10)
    {
-         int y = 5; 
-         y = y + i;
+       int sonuc = 50; 
    }
 
-   if (x == 1)
-   {
-       cout &lt;&lt; "y'nin son degeri: " &lt;&lt; y &lt;&lt; endl;
-   }
+   cout &lt;&lt; "Sonuc degeri: " &lt;&lt; sonuc &lt;&lt; endl;
 
    return 0;
 }</code></pre>
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> Dongu icinde <code>int y = 5;</code> yazilarak yeni bir gecici degisken olusturulmus. En bastaki asil y degiskeni degismez.</p>
-                <p><strong>Cozum:</strong> Icerideki int kelimesi silinmeli: <code>y = 5;</code></p>
+                <p><strong>Hata:</strong> Kapsam (Scope) kargasasi. <code>sonuc</code> degiskeni sadece if blogu icinde (suslu parantezler icinde) tanimlidir. If blogu bittiginde bu degisken yok olur ve disarida cout ile cagirildiginda tanimsiz hatasi verir.</p>
+                <p><strong>Cozum:</strong> <code>int sonuc;</code> tanimi if blogundan once en basa yapilmalidir.</p>
             </div>
         </details>
     </div>
 
     <div class="question-card">
         <h3>17. Soru</h3>
-        <div class="goal">Amac: 1'den 3'e kadar olan sayilarin toplamini y degiskeninde biriktirmek.</div>
+        <div class="goal">Amac: Eger x 1'e esitse, y'nin baslangictaki sifir degerini 10 yapmak ve if blogu bittikten sonra y'yi ekrana yazdirmak.</div>
         <pre><code>#include &lt;iostream&gt;
-#include &lt;cmath&gt;
 
 using namespace std;
 
 int main()
 {
-   int i;
    int x = 1;
-   int y;
-   double z = 0.0;
-
-   for (i = 1; i &lt; 4; i++)
-   {
-         y = y + i; 
-   }
+   int y = 0;
 
    if (x == 1)
    {
-       cout &lt;&lt; "Toplam: " &lt;&lt; y &lt;&lt; endl;
+       int y = 10; 
    }
+
+   cout &lt;&lt; "y'nin son degeri: " &lt;&lt; y &lt;&lt; endl;
 
    return 0;
 }</code></pre>
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>y</code> degiskenine en basta deger atanmamis. Bu yuzden hafizada cop (rastgele) bir degerle toplama islemine baslar.</p>
-                <p><strong>Cozum:</strong> Tanimlama kisminda 0 atanmali: <code>int y = 0;</code></p>
+                <p><strong>Hata:</strong> If blogu icinde basina tekrar <code>int</code> koyularak sadece o bloga ozel, yepyeni bir y degiskeni olusturulmustur. Islem bu yeni y uzerinde yapilirken, en bastaki asil y degeri 0 olarak kalir.</p>
+                <p><strong>Cozum:</strong> Icerideki int kelimesi silinmeli, sadece <code>y = 10;</code> birakilmalidir.</p>
             </div>
         </details>
     </div>
 
     <div class="question-card">
         <h3>18. Soru</h3>
-        <div class="goal">Amac: Sadece negatif olmayan (gecerli) sayilarin karekokunu hesaplamak.</div>
+        <div class="goal">Amac: Sadece negatif olmayan (gecerli) sayilarin karekokunu hesaplamak. (Su an x = -16)</div>
         <pre><code>#include &lt;iostream&gt;
 #include &lt;cmath&gt;
 
@@ -620,15 +554,8 @@ using namespace std;
 
 int main()
 {
-   int i;
    int x = -16;
-   int y = 0;
-   double z = 0.0;
-
-   for (i = 1; i &lt; 4; i++)
-   {
-         y = y + 1;
-   }
+   double z;
 
    if (x &lt; 0)
    {
@@ -641,7 +568,7 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> <code>if (x &lt; 0)</code> sarti yanlistir cunku negatif sayilarin karekoku programi hataya surukler.</p>
+                <p><strong>Hata:</strong> <code>if (x &lt; 0)</code> sartiyla sadece negatif sayilarda islem yapilmaya calisiliyor, bu da C++ programini hataya (NaN) surukler.</p>
                 <p><strong>Cozum:</strong> Sayi sifirdan buyuk veya esit olmali: <code>if (x &gt;= 0)</code></p>
             </div>
         </details>
@@ -649,23 +576,14 @@ int main()
 
     <div class="question-card">
         <h3>19. Soru</h3>
-        <div class="goal">Amac: Sayinin ayni anda hem pozitif hem de cift sayi oldugunu dogrulamak.</div>
+        <div class="goal">Amac: Sayinin ayni anda hem pozitif hem de cift sayi oldugunu dogrulamak. (Su an x = -4)</div>
         <pre><code>#include &lt;iostream&gt;
-#include &lt;cmath&gt;
 
 using namespace std;
 
 int main()
 {
-   int i;
    int x = -4; 
-   int y = 0;
-   double z = 0.0;
-
-   for (i = 1; i &lt; 4; i++)
-   {
-         y = y + i;
-   }
 
    if (x &gt; 0 || x % 2 == 0)
    {
@@ -677,7 +595,7 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> VEYA (<code>||</code>) kullanildigi icin -4 gibi negatif bir cift sayi sarti gecer.</p>
+                <p><strong>Hata:</strong> VEYA (<code>||</code>) kullanildigi icin -4 gibi negatif bir cift sayi sadece cift olma kuralini karsilayarak sarti asar.</p>
                 <p><strong>Cozum:</strong> Iki durumun ayni anda gecerli olmasi icin VE kullanilmali: <code>if (x &gt; 0 && x % 2 == 0)</code></p>
             </div>
         </details>
@@ -687,21 +605,12 @@ int main()
         <h3>20. Soru</h3>
         <div class="goal">Amac: x ile belirtilen gunun hafta sonu (Cumartesi yani 6 veya Pazar yani 7) olup olmadigini kontrol etmek.</div>
         <pre><code>#include &lt;iostream&gt;
-#include &lt;cmath&gt;
 
 using namespace std;
 
 int main()
 {
-   int i;
    int x = 6; 
-   int y = 0;
-   double z = 0.0;
-
-   for (i = 1; i &lt; 4; i++)
-   {
-         y = y + i;
-   }
 
    if (x == 6 && x == 7)
    {
@@ -713,7 +622,7 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> VE (<code>&&</code>) kullanilmis. Degisken ayni anda hem 6 hem de 7 olamaz.</p>
+                <p><strong>Hata:</strong> VE (<code>&&</code>) kullanilmis. Degisken ayni anda hem 6 hem de 7 olamaz, bu sart asla gerceklesmez.</p>
                 <p><strong>Cozum:</strong> Iki gunden biri olmasi yeterlidir: <code>if (x == 6 || x == 7)</code></p>
             </div>
         </details>
@@ -721,23 +630,14 @@ int main()
 
     <div class="question-card">
         <h3>21. Soru</h3>
-        <div class="goal">Amac: Girilen notun 1 ile 100 arasinda (1 ve 100 dahil) gecerli bir not olup olmadigini kontrol etmek.</div>
+        <div class="goal">Amac: Girilen notun 1 ile 100 arasinda (1 ve 100 dahil) gecerli bir not olup olmadigini kontrol etmek. (Su an x = 150)</div>
         <pre><code>#include &lt;iostream&gt;
-#include &lt;cmath&gt;
 
 using namespace std;
 
 int main()
 {
-   int i;
    int x = 150; 
-   int y = 0;
-   double z = 0.0;
-
-   for (i = 1; i &lt; 4; i++)
-   {
-         y = y + i;
-   }
 
    if (x &gt;= 1 || x &lt;= 100)
    {
@@ -749,14 +649,11 @@ int main()
         <details>
             <summary>Cevabi Goster</summary>
             <div class="answer-content">
-                <p><strong>Hata:</strong> VEYA (<code>||</code>) kullanildigi icin 150 degeri, 1'den buyuk olma sartini saglayip iceri girer.</p>
+                <p><strong>Hata:</strong> VEYA (<code>||</code>) kullanildigi icin 150 degeri, sirf 1'den buyuk olma sartini sagladigi icin iceri girer.</p>
                 <p><strong>Cozum:</strong> Belli bir aralik icin VE operatoru kullanilmali: <code>if (x &gt;= 1 && x &lt;= 100)</code></p>
             </div>
         </details>
     </div>
-
-
-<p> Meric Yikar icin hazirlanmis ozel cpp debugging soru sitesidir. </p>
 
 </body>
 </html>
